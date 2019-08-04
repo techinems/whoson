@@ -1,6 +1,6 @@
 {
   "name": "whoson",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Provides slash command to query RPI Ambulance's crew schedule from Slack",
   "main": "server.js",
   "scripts": {
