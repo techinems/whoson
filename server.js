@@ -11,6 +11,7 @@ const app = express();
 
 //globals
 const RPIA_WEB_TOKEN = process.env.RPIA_WEB_TOKEN;
+const PORT = process.env.NODE_PORT || 3000;
 
 app.post("/whoson", async ({ body: { text } }, res) => {
   let done = false;
@@ -118,4 +119,8 @@ app.post("/whoson", async ({ body: { text } }, res) => {
       res.send(body);
     }
   }
+});
+
+app.listen(PORT, () => {
+  console.log(`whoson running on port ${PORT}`);
 });
