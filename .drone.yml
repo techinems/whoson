@@ -12,9 +12,9 @@ steps:
       port: 22
       script:
         - docker-compose -f /drone/docker-compose.yml up -d --build whoson
-      when:
-        branch:
-          - master
+    when:
+      branch:
+        - master
 
   - name: deploy-dev
     image: appleboy/drone-ssh
@@ -26,6 +26,6 @@ steps:
       port: 22
       script:
         - docker-compose -f /drone/docker-compose.yml up -d --build whoson-dev
-      when:
-        branch:
-          - dev
+    when:
+      branch:
+        - dev
