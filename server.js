@@ -1,6 +1,7 @@
 //node packages
 const express = require("express");
-const { get } = require("cachios");
+const axios = require("cachios");
+const bodyParser = require("body-parser");
 require("dotenv").config();
 
 //local packages
@@ -8,27 +9,33 @@ const { makeWhosonDate } = require("./utilities/helperFunctions.js");
 
 //node package config
 const app = express();
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 //globals
 const RPIA_WEB_TOKEN = process.env.RPIA_WEB_TOKEN;
+const SLACK_SIGNING_TOKEN = process.env.SLACK_SIGNING_TOKEN;
 const PORT = process.env.NODE_PORT || 3000;
 
-app.post("/whoson", async ({ body: { text } }, res) => {
+app.post("/whoson", async ({ body: { token, text } }, res) => {
+  if (token != SLACK_SIGNING_TOKEN) {
+    res.send("Sorry, you're not authenticated!");
+  }
   let done = false;
   if (text === "" || text.toLowerCase() === "today") {
-    const { body } = await get(
+    const { data } = await axios.get(
       `https://rpiambulance.com/slack-whoson.php?token=${RPIA_WEB_TOKEN}`
     );
-    res.send(body);
+    res.send(data);
   } else if (text.toLowerCase() === "week") {
-    const { body } = await get(
+    const { data } = await axios.get(
       `https://rpiambulance.com/slack-whoson.php?token=${RPIA_WEB_TOKEN}&week=1`
     );
-    res.send(body);
+    res.send(data);
   } else {
     const d = new Date();
     let o = new Date();
-    let date;
+    let date = "";
 
     switch (text.toLowerCase()) {
       case "yest":
@@ -106,17 +113,15 @@ app.post("/whoson", async ({ body: { text } }, res) => {
         break;
 
       default:
-        res
-          .status(400)
-          .send("Please enter a valid day parameter and try again.");
+        res.send("Please enter a valid day parameter and try again.");
         done = true;
     }
 
     if (!done) {
-      const { body } = get(
+      const { data } = await axios.get(
         `https://rpiambulance.com/slack-whoson.php?token=${RPIA_WEB_TOKEN}&date=${date}`
       );
-      res.send(body);
+      res.send(data);
     }
   }
 });
