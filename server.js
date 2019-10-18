@@ -5,7 +5,7 @@ const bodyParser = require("body-parser");
 require("dotenv").config();
 
 //local packages
-const { makeWhosonDate } = require("./utilities/helperFunctions.js");
+const { dateForOffset, dateForRelative, getDate } = require("./utilities/helpers.js");
 
 //node package config
 const app = express();
@@ -17,115 +17,24 @@ const RPIA_WEB_TOKEN = process.env.RPIA_WEB_TOKEN;
 const SLACK_SIGNING_TOKEN = process.env.SLACK_SIGNING_TOKEN;
 const PORT = process.env.NODE_PORT || 3000;
 
+const whoson = t => {
+  const url = `https://rpiambulance.com/slack-whoson.php?token=${RPIA_WEB_TOKEN}`;
+
+  if (t === "" || t === "today" || t === "week") {
+    const addlQuery = t === "week" ? "&week=1" : "";
+    const { data } = await axios.get(url + addlQuery);
+    return data;
+  }
+
+  const date = getDateForInput(t);
+  if (!date) return null;
+  const { data } = await axios.get(`${url}&date=${date}`);
+  return data;
+};
+
 app.post("/whoson", async ({ body: { token, text } }, res) => {
-  if (token != SLACK_SIGNING_TOKEN) {
-    res.send("Sorry, you're not authenticated!");
-  }
-  let done = false;
-  if (text === "" || text.toLowerCase() === "today") {
-    const { data } = await axios.get(
-      `https://rpiambulance.com/slack-whoson.php?token=${RPIA_WEB_TOKEN}`
-    );
-    res.send(data);
-  } else if (text.toLowerCase() === "week") {
-    const { data } = await axios.get(
-      `https://rpiambulance.com/slack-whoson.php?token=${RPIA_WEB_TOKEN}&week=1`
-    );
-    res.send(data);
-  } else {
-    const d = new Date();
-    let o = new Date();
-    let date = "";
-
-    switch (text.toLowerCase()) {
-      case "yest":
-      case "yesterday":
-        o.setDate(d.getDate() - 1);
-        date = makeWhosonDate(o) + "&yesterday=1";
-        break;
-
-      case "tom":
-      case "tomorrow":
-        o.setDate(d.getDate() + 1);
-        date = makeWhosonDate(o) + "&tomorrow=1";
-        break;
-
-      case "sun":
-      case "sunday":
-        o.setDate(d.getDate() + (7 - d.getDay()));
-        date = makeWhosonDate(o);
-        break;
-
-      case "mon":
-      case "monday":
-        if (d.getDay() < 1) {
-          o.setDate(d.getDate() + (1 - d.getDay()));
-        } else {
-          o.setDate(d.getDate() + (7 - (d.getDay() - 1)));
-        }
-        date = makeWhosonDate(o);
-        break;
-
-      case "tues":
-      case "tuesday":
-        if (d.getDay() < 2) {
-          o.setDate(d.getDate() + (2 - d.getDay()));
-        } else {
-          o.setDate(d.getDate() + (7 - (d.getDay() - 2)));
-        }
-        date = makeWhosonDate(o);
-        break;
-
-      case "wed":
-      case "wednesday":
-        if (d.getDay() < 3) {
-          o.setDate(d.getDate() + (3 - d.getDay()));
-        } else {
-          o.setDate(d.getDate() + (7 - (d.getDay() - 3)));
-        }
-        date = makeWhosonDate(o);
-        break;
-
-      case "thurs":
-      case "thursday":
-        if (d.getDay() < 4) {
-          o.setDate(d.getDate() + (4 - d.getDay()));
-        } else {
-          o.setDate(d.getDate() + (7 - (d.getDay() - 4)));
-        }
-        date = makeWhosonDate(o);
-        break;
-
-      case "fri":
-      case "friday":
-        if (d.getDay() < 5) {
-          o.setDate(d.getDate() + (5 - d.getDay()));
-        } else {
-          o.setDate(d.getDate() + (7 - (d.getDay() - 5)));
-        }
-        date = makeWhosonDate(o);
-        break;
-
-      case "sat":
-      case "saturday":
-        o.setDate(d.getDate() + (6 - d.getDay()));
-        date = makeWhosonDate(o);
-        break;
-
-      default:
-        res.send("Please enter a valid day parameter and try again.");
-        done = true;
-    }
-
-    if (!done) {
-      const { data } = await axios.get(
-        `https://rpiambulance.com/slack-whoson.php?token=${RPIA_WEB_TOKEN}&date=${date}`
-      );
-      res.send(data);
-    }
-  }
+  if (token != SLACK_SIGNING_TOKEN) return res.sendStatus(401);
+  res.send(whoson(text.toLowerCase()) || "Please enter a valid day and try again.");
 });
 
-app.listen(PORT, () => {
-  console.log(`whoson running on port ${PORT}`);
-});
+app.listen(PORT, () => console.log(`whoson running on port ${PORT}`));
