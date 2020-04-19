@@ -84,3 +84,6 @@ typings/
 .dynamodb/
 
 keys/
+
+#Documentation
+docs/
