@@ -26,7 +26,7 @@ const whoson = async(text) => {
     return data;
   }
 
-  const date = getDate(t);
+  const date = getDate(text);
   if (!date) return null;
   const { data } = await axios.get(`${url}&date=${date}`);
   return data;
