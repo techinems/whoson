@@ -17,11 +17,11 @@ const RPIA_WEB_TOKEN = process.env.RPIA_WEB_TOKEN;
 const SLACK_SIGNING_TOKEN = process.env.SLACK_SIGNING_TOKEN;
 const PORT = process.env.NODE_PORT || 3000;
 
-const whoson = async(t) => {
+const whoson = async(text) => {
   const url = `https://rpiambulance.com/slack-whoson.php?token=${RPIA_WEB_TOKEN}`;
 
-  if (t === "" || t === "today" || t === "week") {
-    const addlQuery = t === "week" ? "&week=1" : "";
+  if (text === "" || text === "today" || text === "week") {
+    const addlQuery = text === "week" ? "&week=1" : "";
     const { data } = await axios.get(url + addlQuery);
     return data;
   }
