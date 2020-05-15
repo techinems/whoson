@@ -5,7 +5,7 @@ const bodyParser = require("body-parser");
 require("dotenv").config();
 
 //local packages
-const { dateForOffset, dateForRelative, getDate } = require("./utilities/helpers.js");
+const { getDate } = require("./utilities/helpers.js");
 
 //node package config
 const app = express();
@@ -17,24 +17,26 @@ const RPIA_WEB_TOKEN = process.env.RPIA_WEB_TOKEN;
 const SLACK_SIGNING_TOKEN = process.env.SLACK_SIGNING_TOKEN;
 const PORT = process.env.NODE_PORT || 3000;
 
-const whoson = t => {
+const whoson = async(text) => {
   const url = `https://rpiambulance.com/slack-whoson.php?token=${RPIA_WEB_TOKEN}`;
 
-  if (t === "" || t === "today" || t === "week") {
-    const addlQuery = t === "week" ? "&week=1" : "";
+  if (text === "" || text === "today" || text === "week") {
+    const addlQuery = text === "week" ? "&week=1" : "";
     const { data } = await axios.get(url + addlQuery);
     return data;
   }
 
-  const date = getDateForInput(t);
+  const date = getDate(text);
   if (!date) return null;
   const { data } = await axios.get(`${url}&date=${date}`);
   return data;
 };
 
 app.post("/whoson", async ({ body: { token, text } }, res) => {
-  if (token != SLACK_SIGNING_TOKEN) return res.sendStatus(401);
-  res.send(whoson(text.toLowerCase()) || "Please enter a valid day and try again.");
+  if (token !== SLACK_SIGNING_TOKEN) return res.sendStatus(401);
+  whoson(text.toLowerCase()).then(result => {
+    res.send(result || "Please enter a valid day and try again.");
+  })
 });
 
 app.listen(PORT, () => console.log(`whoson running on port ${PORT}`));

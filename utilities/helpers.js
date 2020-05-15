@@ -19,16 +19,30 @@ const dateForRelative = (name, offset) => {
 };
 
 const getDate = t => {
-  if (t === "yest" || t === "yesterday") return dateForRelative("yesterday", -1);
-  if (t === "tom" || t === "tomorrow") return dateForRelative("tomorrow", 1);
-  if (t === "sun" || t === "sunday") return dateForOffset(0);
-  if (t === "mon" || t === "monday") return dateForOffset(1);
-  if (t === "tues" || t === "tuesday") return dateForOffset(2);
-  if (t === "wed" || t === "wednesday") return dateForOffset(3);
-  if (t === "thurs" || t === "thursday") return dateForOffset(4);
-  if (t === "fri" || t === "friday") return dateForOffset(5);
-  if (t === "sat" || t === "saturday") return dateForOffset(6);
-  return null;
+  if (t.length < 2) return null;
+  const short = t.substring(0,2);
+  switch (short) {
+    case 'ye':
+      return dateForRelative("yesterday", -1);
+    case 'to':
+      return dateForRelative("tomorrow", 1);
+    case 'su':
+      return dateForOffset(0);
+    case 'mo':
+      return dateForOffset(1);
+    case 'tu':
+      return dateForOffset(2);
+    case 'we':
+      return dateForOffset(3);
+    case 'th':
+      return dateForOffset(4);
+    case 'fr':
+      return dateForOffset(5);
+    case "sa":
+      return dateForOffset(6);
+    default:
+      return null
+  }
 };
 
 module.exports = { dateForDayOffset, dateForRelative, getDate };
