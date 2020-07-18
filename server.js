@@ -1,7 +1,6 @@
 //node packages
 const express = require("express");
 const axios = require("cachios");
-const bodyParser = require("body-parser");
 require("dotenv").config();
 
 //local packages
@@ -9,8 +8,8 @@ const { getDate } = require("./utilities/helpers.js");
 
 //node package config
 const app = express();
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
 
 //globals
 const RPIA_WEB_TOKEN = process.env.RPIA_WEB_TOKEN;
