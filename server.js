@@ -17,6 +17,11 @@ const RPIA_WEB_TOKEN = process.env.RPIA_WEB_TOKEN;
 const SLACK_SIGNING_TOKEN = process.env.SLACK_SIGNING_TOKEN;
 const PORT = process.env.NODE_PORT || 3000;
 
+/**
+ * Provide handling for whoson command. Allowed day options are handled by cases. Once date is calculated and formatted, 
+ * querey website database for who is on. Returned result from website query is expected to be a string of riders. 
+ * That is then posted as the message.
+ */
 app.post("/whoson", async ({ body: { token, text } }, res) => {
   if (token != SLACK_SIGNING_TOKEN) {
     res.send("Sorry, you're not authenticated!");
