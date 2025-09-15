@@ -13,6 +13,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 //globals
+const BASE_URL = process.env.BASE_URL;
 const RPIA_WEB_TOKEN = process.env.RPIA_WEB_TOKEN;
 const SLACK_SIGNING_TOKEN = process.env.SLACK_SIGNING_TOKEN;
 const PORT = process.env.NODE_PORT || 3000;
@@ -24,12 +25,12 @@ app.post("/whoson", async ({ body: { token, text } }, res) => {
   let done = false;
   if (text === "" || text.toLowerCase() === "today") {
     const { data } = await axios.get(
-      `https://rpiambulance.com/slack-whoson.php?token=${RPIA_WEB_TOKEN}`
+      `${BASE_URL}?token=${RPIA_WEB_TOKEN}`
     );
     res.send(data);
   } else if (text.toLowerCase() === "week") {
     const { data } = await axios.get(
-      `https://rpiambulance.com/slack-whoson.php?token=${RPIA_WEB_TOKEN}&week=1`
+      `${BASE_URL}?token=${RPIA_WEB_TOKEN}&week=1`
     );
     res.send(data);
   } else {
@@ -119,7 +120,7 @@ app.post("/whoson", async ({ body: { token, text } }, res) => {
 
     if (!done) {
       const { data } = await axios.get(
-        `https://rpiambulance.com/slack-whoson.php?token=${RPIA_WEB_TOKEN}&date=${date}`
+        `${BASE_URL}?token=${RPIA_WEB_TOKEN}&date=${date}`
       );
       res.send(data);
     }
