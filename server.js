@@ -13,7 +13,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 //globals
-const BASE_URL = process.env.BASE_URL
+const BASE_URL = process.env.BASE_URL;
 const RPIA_WEB_TOKEN = process.env.RPIA_WEB_TOKEN;
 const SLACK_SIGNING_TOKEN = process.env.SLACK_SIGNING_TOKEN;
 const PORT = process.env.NODE_PORT || 3000;
