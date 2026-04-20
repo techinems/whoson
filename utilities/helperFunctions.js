@@ -1,3 +1,9 @@
+/**
+ * Function to convert javascript date object to date string as formated in website database.
+ * 
+ * @param {date} date - date object to be converted
+ * @returns {string} datestring - "year-month-day" formatted string
+ */
 const makeWhosonDate = date => {
   const year = date.getFullYear();
   let month = date.getMonth() + 1;
