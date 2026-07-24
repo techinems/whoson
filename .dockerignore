@@ -1,0 +1,11 @@
+node_modules/
+.git/
+.env
+.env.test
+*.example
+eslint.config.js
+scripts/
+test/
+.github/
+README.md
+keys/
