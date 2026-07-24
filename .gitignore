@@ -84,3 +84,6 @@ typings/
 .dynamodb/
 
 keys/
+
+# Deploy secrets
+scripts/config.sh
